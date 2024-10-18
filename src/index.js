@@ -8,7 +8,6 @@ app.use(express.json());
 // **************************************************************
 // Put your implementation here
 // If necessary to add imports, please do so in the section above
-
 var users = []
 
 app.post('/users', (req, res) => {
