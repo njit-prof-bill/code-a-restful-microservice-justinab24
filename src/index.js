@@ -11,41 +11,47 @@ app.use(express.json());
 var users = []
 
 app.post('/users', (req, res) => {
-    const { name, email } = req.body;
-    const randid = Math.floor(Math.random() * 1000);
-    users.push({name, email, id: randid})
-    res.status(201).json({ name: name, email: email, id: randid});
+    try {
+        const { name, email } = req.body;
+        const randid = Math.floor(Math.random() * 1000);
+        users.push({name, email, id: randid})
+        res.status(201).json({ name: name, email: email, id: randid});
+    } catch (error) {
+        res.status(400).send(error.message);
+    }
 })
 
 app.get('/users/:id', (req, res) => {
-    const {id} = req.params;
-    const foundUser = users.find(x => x.id == id);
-    if (!foundUser) {
-        res.status(404).send();
-    }
-    res.status(200).json({ id: Number(id), name: foundUser.name, email: foundUser.email })
-})
-
-app.put("/users/:id", (req, res) => {
-    const { id } = req.params;
-    const { name, email } = req.body;
-    const foundUserIndex = users.findIndex(x => x.id == id);
-    if (!foundUserIndex) {
-        res.status(404).send();
-    }
-    users[foundUserIndex].name = name;
-    users[foundUserIndex].email = email;
-    res.status(200).json({ id: id, name: name, email: email });
-})
-
-app.delete("/users/:id", (req, res) => {
-    const { id } = req.params;
     try {
-        users = users.filter(x => x.id != id);
+        const {id} = req.params;
+        const foundUser = users.find(x => x.id == id);
+        res.status(200).json({ id: Number(id), name: foundUser.name, email: foundUser.email })
     } catch (error) {
         res.status(404).send(error.message);
     }
-    res.status(204).send();
+})
+
+app.put("/users/:id", (req, res) => {
+    try {
+        const { id } = req.params;
+        const { name, email } = req.body;
+        const foundUserIndex = users.findIndex(x => x.id == id);
+        users[foundUserIndex].name = name;
+        users[foundUserIndex].email = email;
+        res.status(200).json({ id: id, name: name, email: email });
+    } catch (error) {
+        res.status(404).send(error.message);
+    }
+})
+
+app.delete("/users/:id", (req, res) => {
+    try {
+        const { id } = req.params;
+        users = users.filter(x => x.id != id);
+        res.status(204).send();
+    } catch (error) {
+        res.status(404).send(error.message);
+    }
 })
 
 app.get('/', (req, res) => {
